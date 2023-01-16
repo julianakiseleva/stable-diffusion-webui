@@ -599,7 +599,7 @@ def create_ui():
             with gr.Column(variant='panel', elem_id="txt2img_settings"):
                 for category in ordered_ui_categories():
                     if category == "sampler":
-                        steps, sampler_index = create_sampler_and_steps_selection(samplers, "txt2img")
+                        steps, sampler_index = create_sampler_and_steps_selection(samplers, "crAItvt")
 
                     elif category == "dimensions":
                         with FormRow():
