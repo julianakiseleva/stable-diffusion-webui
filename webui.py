@@ -36,6 +36,8 @@ import modules.script_callbacks
 import modules.textual_inversion.textual_inversion
 import modules.progress
 
+import modules.craitvt
+
 import modules.ui
 from modules import modelloader
 from modules.shared import cmd_opts
