@@ -579,6 +579,7 @@ def ordered_ui_categories():
 def create_ui():
     import modules.img2img
     import modules.txt2img
+    import modules.craitvt
 
     reload_javascript()
 
@@ -586,6 +587,189 @@ def create_ui():
 
     modules.scripts.scripts_current = modules.scripts.scripts_txt2img
     modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=False)
+
+# Duplicate of txt2img
+    with gr.Blocks(analytics_enabled=False) as txt2img_interface:
+        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _,txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
+
+        dummy_component = gr.Label(visible=False)
+        txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
+
+        with gr.Row().style(equal_height=False):
+            with gr.Column(variant='panel', elem_id="txt2img_settings"):
+                for category in ordered_ui_categories():
+                    if category == "sampler":
+                        steps, sampler_index = create_sampler_and_steps_selection(samplers, "txt2img")
+
+                    elif category == "dimensions":
+                        with FormRow():
+                            with gr.Column(elem_id="txt2img_column_size", scale=4):
+                                width = gr.Slider(minimum=64, maximum=2048, step=8, label="Width", value=512, elem_id="txt2img_width")
+                                height = gr.Slider(minimum=64, maximum=2048, step=8, label="Height", value=512, elem_id="txt2img_height")
+
+                            if opts.dimensions_and_batch_together:
+                                with gr.Column(elem_id="txt2img_column_batch"):
+                                    batch_count = gr.Slider(minimum=1, step=1, label='Batch count', value=1, elem_id="txt2img_batch_count")
+                                    batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id="txt2img_batch_size")
+
+                    elif category == "cfg":
+                        cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0, elem_id="txt2img_cfg_scale")
+
+                    elif category == "seed":
+                        seed, reuse_seed, subseed, reuse_subseed, subseed_strength, seed_resize_from_h, seed_resize_from_w, seed_checkbox = create_seed_inputs('txt2img')
+
+                    elif category == "checkboxes":
+                        with FormRow(elem_id="txt2img_checkboxes"):
+                            restore_faces = gr.Checkbox(label='Restore faces', value=False, visible=len(shared.face_restorers) > 1, elem_id="txt2img_restore_faces")
+                            tiling = gr.Checkbox(label='Tiling', value=False, elem_id="txt2img_tiling")
+                            enable_hr = gr.Checkbox(label='Hires. fix', value=False, elem_id="txt2img_enable_hr")
+                            hr_final_resolution = FormHTML(value="", elem_id="txtimg_hr_finalres", label="Upscaled resolution", interactive=False)
+
+                    elif category == "hires_fix":
+                        with FormGroup(visible=False, elem_id="txt2img_hires_fix") as hr_options:
+                            with FormRow(elem_id="txt2img_hires_fix_row1"):
+                                hr_upscaler = gr.Dropdown(label="Upscaler", elem_id="txt2img_hr_upscaler", choices=[*shared.latent_upscale_modes, *[x.name for x in shared.sd_upscalers]], value=shared.latent_upscale_default_mode)
+                                hr_second_pass_steps = gr.Slider(minimum=0, maximum=150, step=1, label='Hires steps', value=0, elem_id="txt2img_hires_steps")
+                                denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='Denoising strength', value=0.7, elem_id="txt2img_denoising_strength")
+
+                            with FormRow(elem_id="txt2img_hires_fix_row2"):
+                                hr_scale = gr.Slider(minimum=1.0, maximum=4.0, step=0.05, label="Upscale by", value=2.0, elem_id="txt2img_hr_scale")
+                                hr_resize_x = gr.Slider(minimum=0, maximum=2048, step=8, label="Resize width to", value=0, elem_id="txt2img_hr_resize_x")
+                                hr_resize_y = gr.Slider(minimum=0, maximum=2048, step=8, label="Resize height to", value=0, elem_id="txt2img_hr_resize_y")
+
+                    elif category == "batch":
+                        if not opts.dimensions_and_batch_together:
+                            with FormRow(elem_id="txt2img_column_batch"):
+                                batch_count = gr.Slider(minimum=1, step=1, label='Batch count', value=1, elem_id="txt2img_batch_count")
+                                batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id="txt2img_batch_size")
+
+                    elif category == "scripts":
+                        with FormGroup(elem_id="txt2img_script_container"):
+                            custom_inputs = modules.scripts.scripts_txt2img.setup_ui()
+
+            hr_resolution_preview_inputs = [enable_hr, width, height, hr_scale, hr_resize_x, hr_resize_y]
+            for input in hr_resolution_preview_inputs:
+                input.change(
+                    fn=calc_resolution_hires,
+                    inputs=hr_resolution_preview_inputs,
+                    outputs=[hr_final_resolution],
+                    show_progress=False,
+                )
+                input.change(
+                    None,
+                    _js="onCalcResolutionHires",
+                    inputs=hr_resolution_preview_inputs,
+                    outputs=[],
+                    show_progress=False,
+                )
+
+            txt2img_gallery, generation_info, html_info, html_log = create_output_panel("txt2img", opts.outdir_txt2img_samples)
+            parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
+
+            connect_reuse_seed(seed, reuse_seed, generation_info, dummy_component, is_subseed=False)
+            connect_reuse_seed(subseed, reuse_subseed, generation_info, dummy_component, is_subseed=True)
+
+            txt2img_args = dict(
+                fn=wrap_gradio_gpu_call(modules.txt2img.txt2img, extra_outputs=[None, '', '']),
+                _js="submit",
+                inputs=[
+                    dummy_component,
+                    txt2img_prompt,
+                    txt2img_negative_prompt,
+                    txt2img_prompt_style,
+                    txt2img_prompt_style2,
+                    steps,
+                    sampler_index,
+                    restore_faces,
+                    tiling,
+                    batch_count,
+                    batch_size,
+                    cfg_scale,
+                    seed,
+                    subseed, subseed_strength, seed_resize_from_h, seed_resize_from_w, seed_checkbox,
+                    height,
+                    width,
+                    enable_hr,
+                    denoising_strength,
+                    hr_scale,
+                    hr_upscaler,
+                    hr_second_pass_steps,
+                    hr_resize_x,
+                    hr_resize_y,
+                ] + custom_inputs,
+
+                outputs=[
+                    txt2img_gallery,
+                    generation_info,
+                    html_info,
+                    html_log,
+                ],
+                show_progress=False,
+            )
+
+            txt2img_prompt.submit(**txt2img_args)
+            submit.click(**txt2img_args)
+
+            txt_prompt_img.change(
+                fn=modules.images.image_data,
+                inputs=[
+                    txt_prompt_img
+                ],
+                outputs=[
+                    txt2img_prompt,
+                    txt_prompt_img
+                ]
+            )
+
+            enable_hr.change(
+                fn=lambda x: gr_show(x),
+                inputs=[enable_hr],
+                outputs=[hr_options],
+                show_progress = False,
+            )
+
+            txt2img_paste_fields = [
+                (txt2img_prompt, "Prompt"),
+                (txt2img_negative_prompt, "Negative prompt"),
+                (steps, "Steps"),
+                (sampler_index, "Sampler"),
+                (restore_faces, "Face restoration"),
+                (cfg_scale, "CFG scale"),
+                (seed, "Seed"),
+                (width, "Size-1"),
+                (height, "Size-2"),
+                (batch_size, "Batch size"),
+                (subseed, "Variation seed"),
+                (subseed_strength, "Variation seed strength"),
+                (seed_resize_from_w, "Seed resize from-1"),
+                (seed_resize_from_h, "Seed resize from-2"),
+                (denoising_strength, "Denoising strength"),
+                (enable_hr, lambda d: "Denoising strength" in d),
+                (hr_options, lambda d: gr.Row.update(visible="Denoising strength" in d)),
+                (hr_scale, "Hires upscale"),
+                (hr_upscaler, "Hires upscaler"),
+                (hr_second_pass_steps, "Hires steps"),
+                (hr_resize_x, "Hires resize-1"),
+                (hr_resize_y, "Hires resize-2"),
+                *modules.scripts.scripts_txt2img.infotext_fields
+            ]
+            parameters_copypaste.add_paste_fields("txt2img", None, txt2img_paste_fields)
+
+            txt2img_preview_params = [
+                txt2img_prompt,
+                txt2img_negative_prompt,
+                steps,
+                sampler_index,
+                cfg_scale,
+                seed,
+                width,
+                height,
+            ]
+
+            token_button.click(fn=wrap_queued_call(update_token_counter), inputs=[txt2img_prompt, steps], outputs=[token_counter])
+
+
+# end of duplicate txt2img
 
     with gr.Blocks(analytics_enabled=False) as txt2img_interface:
         txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _,txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
