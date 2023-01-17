@@ -589,7 +589,7 @@ def create_ui():
     modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=False)
 
 # Duplicate of txt2img
-    with gr.Blocks(analytics_enabled=False) as txt2img_interface:
+    with gr.Blocks(analytics_enabled=False) as craitvt_interface:
         txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _,txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
@@ -1810,6 +1810,7 @@ def create_ui():
         )
 
     interfaces = [
+        (craitvt_interface, "craitvt", "craitvt"),
         (txt2img_interface, "txt2img", "txt2img"),
         (img2img_interface, "img2img", "img2img"),
         (extras_interface, "Extras", "extras"),
@@ -1980,6 +1981,7 @@ def create_ui():
         if type(x) == gr.Dropdown:
             apply_field(x, 'value', lambda val: val in x.choices, getattr(x, 'init_field', None))
 
+    visit(craitvt_interface, loadsave, "craitvt")
     visit(txt2img_interface, loadsave, "txt2img")
     visit(img2img_interface, loadsave, "img2img")
     visit(extras_interface, loadsave, "extras")
