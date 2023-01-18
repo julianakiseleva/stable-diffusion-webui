@@ -717,11 +717,11 @@ def create_ui():
                 outputs=[txt2img_prompt],
             )
 
-            img2img_deepbooru.click(
-                fn=interrogate_deepbooru,
-                inputs=[init_img],
-                outputs=[txt2img_prompt],
-            )
+            # img2img_deepbooru.click(
+            #     fn=interrogate_deepbooru,
+            #     inputs=[init_img],
+            #     outputs=[txt2img_prompt],
+            # )
 
             txt_prompt_img.change(
                 fn=modules.images.image_data,
