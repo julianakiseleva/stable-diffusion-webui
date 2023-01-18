@@ -588,7 +588,7 @@ def create_ui():
     modules.scripts.scripts_current = modules.scripts.scripts_txt2img
     modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=False)
 
-# Duplicate of txt2img
+# craitvt Duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
         txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _,txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
 

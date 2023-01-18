@@ -9,6 +9,9 @@ from modules.ui import plaintext_to_html
 
 
 def craitvt(id_task: str, prompt: str, negative_prompt: str, prompt_style: str, prompt_style2: str, steps: int, sampler_index: int, restore_faces: bool, tiling: bool, n_iter: int, batch_size: int, cfg_scale: float, seed: int, subseed: int, subseed_strength: float, seed_resize_from_h: int, seed_resize_from_w: int, seed_enable_extras: bool, height: int, width: int, enable_hr: bool, denoising_strength: float, hr_scale: float, hr_upscaler: str, hr_second_pass_steps: int, hr_resize_x: int, hr_resize_y: int, *args):
+    
+    print("+++++ craitvt started")
+    
     p = StableDiffusionProcessingTxt2Img(
         sd_model=shared.sd_model,
         outpath_samples=opts.outdir_samples or opts.outdir_txt2img_samples,
@@ -46,10 +49,10 @@ def craitvt(id_task: str, prompt: str, negative_prompt: str, prompt_style: str, 
     if cmd_opts.enable_console_prompts:
         print(f"\ntxt2img: {prompt}", file=shared.progress_print_out)
 
-    processed = modules.scripts.scripts_txt2img.run(p, *args)
+    # processed = modules.scripts.scripts_txt2img.run(p, *args)
 
-    if processed is None:
-        processed = process_images(p)
+    # if processed is None:
+    #     processed = process_images(p)
 
     p.close()
 
