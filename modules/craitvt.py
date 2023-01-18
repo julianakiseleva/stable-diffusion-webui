@@ -49,10 +49,10 @@ def craitvt(id_task: str, prompt: str, negative_prompt: str, prompt_style: str, 
     if cmd_opts.enable_console_prompts:
         print(f"\ntxt2img: {prompt}", file=shared.progress_print_out)
 
-    # processed = modules.scripts.scripts_txt2img.run(p, *args)
+    processed = modules.scripts.scripts_txt2img.run(p, *args)
 
-    # if processed is None:
-    #     processed = process_images(p)
+    if processed is None:
+        processed = process_images(p)
 
     p.close()
 
@@ -65,4 +65,4 @@ def craitvt(id_task: str, prompt: str, negative_prompt: str, prompt_style: str, 
     if opts.do_not_show_images:
         processed.images = []
 
-    return # processed.images, generation_info_js, plaintext_to_html(processed.info), plaintext_to_html(processed.comments)
+    return processed.images, generation_info_js, plaintext_to_html(processed.info), plaintext_to_html(processed.comments)
