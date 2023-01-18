@@ -595,7 +595,11 @@ def create_ui():
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
 
+        craitvt_gallery, generation_info, html_info, html_log = create_output_panel("craitvt", opts.outdir_txt2img_samples)
+        parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
+
         with gr.Row().style(equal_height=False):
+
             with gr.Column(variant='panel', elem_id="txt2img_settings"):
                 for category in ordered_ui_categories():
                     if category == "sampler":
@@ -662,9 +666,6 @@ def create_ui():
                     outputs=[],
                     show_progress=False,
                 )
-
-            craitvt_gallery, generation_info, html_info, html_log = create_output_panel("craitvt", opts.outdir_txt2img_samples)
-            parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
 
             connect_reuse_seed(seed, reuse_seed, generation_info, dummy_component, is_subseed=False)
             connect_reuse_seed(subseed, reuse_subseed, generation_info, dummy_component, is_subseed=True)
