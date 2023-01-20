@@ -586,7 +586,7 @@ def create_ui():
     parameters_copypaste.reset()
 
     modules.scripts.scripts_current = modules.scripts.scripts_txt2img
-    modules.scripts.scripts_txt2img.initialize_scripts() # (is_img2img=False)
+    modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=True)
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
