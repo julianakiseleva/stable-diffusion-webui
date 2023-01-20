@@ -586,11 +586,11 @@ def create_ui():
     parameters_copypaste.reset()
 
     modules.scripts.scripts_current = modules.scripts.scripts_txt2img
-    modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=True)
+    modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=False)
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, craitvt_interrogate, craitvt_deepbooru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, txt2img_interrogate, txt2img_deepbooru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
@@ -717,13 +717,13 @@ def create_ui():
                 outputs=[txt2img_prompt],
             )
 
-            craitvt_deepbooru.click(
+            txt2img_interrogate.click(
                 fn=interrogate_deepbooru,
                 inputs=[init_img],
                 outputs=[txt2img_prompt],
             )
 
-            txt_prompt_img.change(
+            txt2img_interrogate.change(
                 fn=modules.images.image_data,
                 inputs=[
                     txt_prompt_img
