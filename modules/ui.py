@@ -711,19 +711,19 @@ def create_ui():
             txt2img_prompt.submit(**txt2img_args)
             submit.click(**txt2img_args)
 
-            craitvt_interrogate.click(
+            txt2img_interrogate.click(
                 fn=interrogate,
                 inputs=[init_img],
                 outputs=[txt2img_prompt],
             )
 
-            txt2img_interrogate.click(
+            txt2img_deepbooru.click(
                 fn=interrogate_deepbooru,
                 inputs=[init_img],
                 outputs=[txt2img_prompt],
             )
 
-            txt2img_interrogate.change(
+            txt_prompt_img.change(
                 fn=modules.images.image_data,
                 inputs=[
                     txt_prompt_img
