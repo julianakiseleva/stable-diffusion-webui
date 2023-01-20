@@ -588,9 +588,9 @@ def create_ui():
     modules.scripts.scripts_current = modules.scripts.scripts_txt2img
     modules.scripts.scripts_txt2img.initialize_scripts(is_img2img=False)
 
-# craitvt duplicate of txt2img
+# craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, txt2img_interrogate, txt2img_deepbooru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
@@ -711,17 +711,17 @@ def create_ui():
             txt2img_prompt.submit(**txt2img_args)
             submit.click(**txt2img_args)
 
-            # txt2img_interrogate.click(
-            #     fn=interrogate,
-            #     inputs=[init_img],
-            #     outputs=[txt2img_prompt],
-            # )
+            txt2img_interrogate.click(
+                fn=interrogate,
+                inputs=[init_img],
+                outputs=[txt2img_prompt],
+            )
 
-            # txt2img_deepbooru.click(
-            #     fn=interrogate_deepbooru,
-            #     inputs=[init_img],
-            #     outputs=[txt2img_prompt],
-            # )
+            txt2img_deepbooru.click(
+                fn=interrogate_deepbooru,
+                inputs=[init_img],
+                outputs=[txt2img_prompt],
+            )
 
             txt_prompt_img.change(
                 fn=modules.images.image_data,
@@ -781,8 +781,7 @@ def create_ui():
 
             token_button.click(fn=wrap_queued_call(update_token_counter), inputs=[txt2img_prompt, steps], outputs=[token_counter])
 
-
-# end of duplicate txt2img
+# craitvt: end of duplicate txt2img
 
     with gr.Blocks(analytics_enabled=False) as txt2img_interface:
         txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, _, _,txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
