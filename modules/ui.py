@@ -600,7 +600,7 @@ def create_ui():
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
 
         craitvt_gallery, generation_info, html_info, html_log = create_output_panel("craitvt", opts.outdir_txt2img_samples)
-        init_img = craitvt_gallery
+        init_img = craitvt_gallery[0]
         parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
 
         with gr.Row().style(equal_height=False):
