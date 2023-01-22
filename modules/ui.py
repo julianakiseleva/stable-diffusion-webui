@@ -596,7 +596,7 @@ def create_ui():
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
         txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_deepbooru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
 
-        # dummy_component = gr.Label(visible=False)
+        dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
 
         craitvt_gallery, generation_info, html_info, html_log = create_output_panel("craitvt", opts.outdir_txt2img_samples)
