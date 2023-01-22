@@ -348,12 +348,16 @@ def create_toprow(is_img2img):
                 outputs=[prompt, negative_prompt],
             )
 
-        button_interrogate = None
-        button_deepbooru = None
-        if is_img2img:
-            with gr.Column(scale=1, elem_id="interrogate_col"):
-                button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
-                button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+        with gr.Column(scale=1, elem_id="interrogate_col"):
+            button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+            button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+
+        # button_interrogate = None
+        # button_deepbooru = None
+        # if is_img2img:
+        #     with gr.Column(scale=1, elem_id="interrogate_col"):
+        #         button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+        #         button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
@@ -966,7 +970,7 @@ def create_ui():
     modules.scripts.scripts_img2img.initialize_scripts(is_img2img=True)
 
     with gr.Blocks(analytics_enabled=False) as img2img_interface:
-        img2img_prompt, img2img_prompt_style, img2img_negative_prompt, img2img_prompt_style2, submit, img2img_interrogate, img2img_deepbooru, img2img_prompt_style_apply, img2img_save_style, img2img_paste,token_counter, token_button = create_toprow(is_img2img=True)
+        img2img_prompt, img2img_prompt_style, img2img_negative_prompt, img2img_prompt_style2, submit, img2img_interrogate, img2img_deepbooru, img2img_prompt_style_apply, img2img_save_style, img2img_paste, token_counter, token_button = create_toprow(is_img2img=True)
 
         img2img_prompt_img = gr.File(label="", elem_id="img2img_prompt_image", file_count="single", type="bytes", visible=False)
 
