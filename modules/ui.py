@@ -348,16 +348,19 @@ def create_toprow(is_img2img):
                 outputs=[prompt, negative_prompt],
             )
 
-        with gr.Column(scale=1, elem_id="interrogate_col"):
-            button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
-            button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+        # with gr.Column(scale=1, elem_id="interrogate_col"):
+        #     button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+        #     button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
 
-        # button_interrogate = None
-        # button_deepbooru = None
-        # if is_img2img:
-        #     with gr.Column(scale=1, elem_id="interrogate_col"):
-        #         button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
-        #         button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+        button_interrogate = None
+        button_deepbooru = None
+        if is_img2img:
+            with gr.Column(scale=1, elem_id="interrogate_col"):
+                button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+                button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+        else:
+            with gr.Column(scale=1, elem_id="interrogate_col"):
+                button_interrogate = gr.Button('img2negPrmpt\n(CLIP)', elem_id="interrogate")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
@@ -559,6 +562,109 @@ Requested path was: {f}
                 parameters_copypaste.bind_buttons(buttons, result_gallery, "txt2img" if tabname == "txt2img" else None)
                 return result_gallery, generation_info if tabname != "extras" else html_info_x, html_info, html_log
 
+def create_output_craitvt_panel(tabname, outdir):
+    def open_folder(f):
+        if not os.path.exists(f):
+            print(f'Folder "{f}" does not exist. After you create an image, the folder will be created.')
+            return
+        elif not os.path.isdir(f):
+            print(f"""
+WARNING
+An open_folder request was made with an argument that is not a folder.
+This could be an error or a malicious attempt to run code on your computer.
+Requested path was: {f}
+""", file=sys.stderr)
+            return
+
+        if not shared.cmd_opts.hide_ui_dir_config:
+            path = os.path.normpath(f)
+            if platform.system() == "Windows":
+                os.startfile(path)
+            elif platform.system() == "Darwin":
+                sp.Popen(["open", path])
+            elif "microsoft-standard-WSL2" in platform.uname().release:
+                sp.Popen(["wsl-open", path])
+            else:
+                sp.Popen(["xdg-open", path])
+
+    with gr.Column(variant='panel', elem_id=f"{tabname}_results"):
+            with gr.Group(elem_id=f"{tabname}_gallery_container"):
+                result_gallery = gr.Gallery(label='Output', show_label=False, elem_id=f"{tabname}_gallery").style(grid=4)
+
+            generation_info = None
+            with gr.Column():
+                with gr.Row(elem_id=f"image_buttons_{tabname}"):
+                    open_folder_button = gr.Button(folder_symbol, elem_id="hidden_element" if shared.cmd_opts.hide_ui_dir_config else f'open_folder_{tabname}')
+
+                    if tabname != "extras":
+                        save = gr.Button('Save', elem_id=f'save_{tabname}')
+                        save_zip = gr.Button('Zip', elem_id=f'save_zip_{tabname}')
+
+                    buttons = parameters_copypaste.create_buttons(["img2img", "inpaint", "extras"])
+
+                open_folder_button.click(
+                    fn=lambda: open_folder(opts.outdir_samples or outdir),
+                    inputs=[],
+                    outputs=[],
+                )
+
+                if tabname != "extras":
+                    with gr.Row():
+                        download_files = gr.File(None, file_count="multiple", interactive=False, show_label=False, visible=False, elem_id=f'download_files_{tabname}')
+
+                    with gr.Group():
+                        html_info = gr.HTML(elem_id=f'html_info_{tabname}')
+                        html_log = gr.HTML(elem_id=f'html_log_{tabname}')
+
+                        generation_info = gr.Textbox(visible=False, elem_id=f'generation_info_{tabname}')
+                        if tabname == 'txt2img' or tabname == 'img2img':
+                            generation_info_button = gr.Button(visible=False, elem_id=f"{tabname}_generation_info_button")
+                            generation_info_button.click(
+                                fn=update_generation_info,
+                                _js="(x, y) => [x, y, selected_gallery_index()]",
+                                inputs=[generation_info, html_info],
+                                outputs=[html_info],
+                                preprocess=False
+                            )
+
+                        save.click(
+                            fn=wrap_gradio_call(save_files),
+                            _js="(x, y, z, w) => [x, y, false, selected_gallery_index()]",
+                            inputs=[
+                                generation_info,
+                                result_gallery,
+                                html_info,
+                                html_info,
+                            ],
+                            outputs=[
+                                download_files,
+                                html_log,
+                            ]
+                        )
+
+                        save_zip.click(
+                            fn=wrap_gradio_call(save_files),
+                            _js="(x, y, z, w) => [x, y, true, selected_gallery_index()]",
+                            inputs=[
+                                generation_info,
+                                result_gallery,
+                                html_info,
+                                html_info,
+                            ],
+                            outputs=[
+                                download_files,
+                                html_log,
+                            ]
+                        )
+
+                else:
+                    html_info_x = gr.HTML(elem_id=f'html_info_x_{tabname}')
+                    html_info = gr.HTML(elem_id=f'html_info_{tabname}')
+                    html_log = gr.HTML(elem_id=f'html_log_{tabname}')
+
+                parameters_copypaste.bind_buttons(buttons, result_gallery, "txt2img" if tabname == "txt2img" else None)
+
+                return result_gallery, generation_info if tabname != "extras" else html_info_x, html_info, html_log
 
 def create_sampler_and_steps_selection(choices, tabname):
     if opts.samplers_in_dropdown:
@@ -599,7 +705,7 @@ def create_ui():
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
 
-        craitvt_gallery, generation_info, html_info, html_log = create_output_panel("craitvt", opts.outdir_txt2img_samples)
+        craitvt_gallery, generation_info, html_info, html_log = create_output_craitvt_panel("craitvt", opts.outdir_txt2img_samples)
         init_img = gr.Image(label="Image for img2txt", elem_id="img2txt_image", show_label=False, source="upload", interactive=True, type="pil", image_mode="RGBA")
         # init_img = craitvt_gallery[0]
         parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
@@ -720,14 +826,14 @@ def create_ui():
             img2img_interrogate.click(
                 fn=interrogate,
                 inputs=[init_img],
-                outputs=[txt2img_prompt],
+                outputs=[txt2img_negative_prompt],
             )
 
-            img2img_deepbooru.click(
-                fn=interrogate_deepbooru,
-                inputs=[init_img],
-                outputs=[txt2img_prompt],
-            )
+            # img2img_deepbooru.click(
+            #     fn=interrogate_deepbooru,
+            #     inputs=[init_img],
+            #     outputs=[txt2img_prompt],
+            # )
 
             txt_prompt_img.change(
                 fn=modules.images.image_data,
