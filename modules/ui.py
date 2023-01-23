@@ -87,6 +87,7 @@ refresh_symbol = '\U0001f504'  # 🔄
 save_style_symbol = '\U0001f4be'  # 💾
 apply_style_symbol = '\U0001f4cb'  # 📋
 clear_prompt_symbol = '\U0001F5D1'  # 🗑️
+thumbs_down_symbol = '\U0001F44E'  # 🗑️
 
 
 def plaintext_to_html(text):
@@ -205,7 +206,10 @@ def apply_styles(prompt, prompt_neg, style1_name, style2_name):
 
 
 def interrogate(image):
+
+    print(':-E interrogator started')
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
+    print(':-E interrogator finished')
 
     return gr_show(True) if prompt is None else prompt
 
@@ -360,7 +364,7 @@ def create_toprow(is_img2img):
                 button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
         else:
             with gr.Column(scale=1, elem_id="interrogate_col"):
-                button_interrogate = gr.Button('img2negPrmpt\n(CLIP)', elem_id="interrogate")
+                button_interrogate = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
