@@ -87,7 +87,8 @@ refresh_symbol = '\U0001f504'  # 🔄
 save_style_symbol = '\U0001f4be'  # 💾
 apply_style_symbol = '\U0001f4cb'  # 📋
 clear_prompt_symbol = '\U0001F5D1'  # 🗑️
-thumbs_down_symbol = '\U0001F44E'  # 🗑️
+thumbs_down_symbol = '\U0001F44E' 
+thumbs_up_symbol = '\U0001F44D' 
 
 
 def plaintext_to_html(text):
@@ -593,7 +594,7 @@ Requested path was: {f}
 
     with gr.Column(variant='panel', elem_id=f"{tabname}_results"):
             with gr.Group(elem_id=f"{tabname}_gallery_container"):
-                result_gallery = gr.Gallery(label='Output', show_label=False, elem_id=f"{tabname}_gallery").style(grid=4)
+                result_gallery = gr.Gallery(label='Output', show_label=False, elem_id=f"{tabname}_gallery").style(grid=3)
 
             generation_info = None
             with gr.Column():
@@ -829,7 +830,8 @@ def create_ui():
 
             img2img_interrogate.click(
                 fn=interrogate,
-                inputs=[init_img],
+                # inputs=[init_img],
+                inputs=[craitvt_gallery[html_log]],
                 outputs=[txt2img_negative_prompt],
             )
 
