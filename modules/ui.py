@@ -206,9 +206,10 @@ def apply_styles(prompt, prompt_neg, style1_name, style2_name):
     return [gr.Textbox.update(value=prompt), gr.Textbox.update(value=prompt_neg), gr.Dropdown.update(value="None"), gr.Dropdown.update(value="None")]
 
 
-def interrogate(image):
+def interrogate(image, craitvt_gallery):
 
     print(':-E interrogator started')
+    print(craitvt_gallery)
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
     print(':-E interrogator finished')
 
@@ -711,7 +712,7 @@ def create_ui():
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
 
         craitvt_gallery, generation_info, html_info, html_log = create_output_craitvt_panel("craitvt", opts.outdir_txt2img_samples)
-        init_img = gr.Image(value=craitvt_gallery[html_log], label="Image for img2txt", elem_id="img2txt_image", show_label=False, source="upload", interactive=True, type="pil", image_mode="RGBA")
+        init_img = gr.Image(label="Image for img2txt", elem_id="img2txt_image", show_label=False, source="upload", interactive=True, type="pil", image_mode="RGBA")
         # init_img = craitvt_gallery[0]
         parameters_copypaste.bind_buttons({"txt2img": txt2img_paste}, None, txt2img_prompt)
 
@@ -830,7 +831,10 @@ def create_ui():
 
             img2img_interrogate.click(
                 fn=interrogate,
-                inputs=[init_img],
+                inputs=[
+                    init_img, 
+                    craitvt_gallery
+                ],
                 outputs=[txt2img_negative_prompt],
             )
 
