@@ -208,7 +208,17 @@ def apply_styles(prompt, prompt_neg, style1_name, style2_name):
 
 def interrogate(image, craitvt_gallery):
 
+    # print(':-E interrogator started')
+    print(craitvt_gallery)
+    prompt = shared.interrogator.interrogate(image.convert("RGB"))
+    # print(':-E interrogator finished')
+
+    return gr_show(True) if prompt is None else prompt
+
+def interrogate_craitvt(image, craitvt_gallery, index):
+
     print(':-E interrogator started')
+    print('Selected image data: ', index)
     print(craitvt_gallery)
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
     print(':-E interrogator finished')
@@ -830,10 +840,12 @@ def create_ui():
             submit.click(**txt2img_args)
 
             img2img_interrogate.click(
-                fn=interrogate,
+                fn=interrogate_craitvt,
+                _js="(x, y) => [x, y, selected_gallery_index()]",
                 inputs=[
                     init_img, 
-                    craitvt_gallery
+                    craitvt_gallery,
+                    dummy_component
                 ],
                 outputs=[txt2img_negative_prompt],
             )
