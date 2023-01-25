@@ -841,7 +841,7 @@ def create_ui():
 
             img2img_interrogate.click(
                 fn=interrogate_craitvt,
-                _js="(x, y) => [x, y, selected_gallery_index()]",
+                _js="(x, y, z) => [x, y, selected_gallery_index()]",
                 inputs=[
                     init_img, 
                     craitvt_gallery,
