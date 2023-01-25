@@ -847,7 +847,10 @@ def create_ui():
                     craitvt_gallery,
                     dummy_component
                 ],
-                outputs=[txt2img_negative_prompt],
+                outputs=[
+                    txt2img_negative_prompt,
+                    dummy_component
+                ],
             )
 
             # img2img_deepbooru.click(
