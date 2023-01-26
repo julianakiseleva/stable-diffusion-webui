@@ -221,6 +221,8 @@ def interrogate_craitvt(image, craitvt_gallery, index):
     print('Selected image: ', index)
     print('Selected image info: ', craitvt_gallery[index])
     print('Selected image name: ', craitvt_gallery[index]['name'])
+    # img from file
+    image = gr.Image(value = craitvt_gallery[index]['name'], show_label=False, source="upload", type="pil", image_mode="RGBA")
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
     print('img2prmpt: ', prompt)
     print(':-E interrogator finished')
