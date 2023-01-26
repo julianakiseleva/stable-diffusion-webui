@@ -218,9 +218,11 @@ def interrogate(image, craitvt_gallery):
 def interrogate_craitvt(image, craitvt_gallery, index):
 
     print(':-E interrogator started')
-    print('Selected image data: ', index)
-    print(craitvt_gallery)
+    print('Selected image: ', index)
+    print('Selected image info: ', craitvt_gallery[index])
+    print('Selected image name: ', craitvt_gallery[index]['name'])
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
+    print('img2prmpt: ', prompt)
     print(':-E interrogator finished')
 
     return gr_show(True) if prompt is None else prompt
