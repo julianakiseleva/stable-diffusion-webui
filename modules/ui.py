@@ -425,7 +425,7 @@ def create_toprow_craitvt(is_img2img):
             with gr.Row():
                 with gr.Column(scale=80):
                     with gr.Row():
-                        negative_prompt = gr.Textbox(label="Negative prompt", elem_id=f"{id_part}_neg_prompt", show_label=True, lines=2,
+                        negative_prompt = gr.Textbox(label="Negative prompt", elem_id=f"{id_part}_negative_prompt", show_label=True, lines=2,
                             placeholder="Negative prompt (press Ctrl+Enter or Alt+Enter to generate)"
                         )
 
@@ -457,7 +457,7 @@ def create_toprow_craitvt(is_img2img):
         else:
             with gr.Column(scale=1, elem_id="interrogate_col"):
                 button_interrogate = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="interrogate")
-                button_interrogate = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate_neg")
+                button_interrogate_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate_neg")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
@@ -797,7 +797,7 @@ def create_ui():
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
@@ -941,7 +941,7 @@ def create_ui():
                     dummy_component
                 ],
                 outputs=[
-                    txt2img_neg_prompt,
+                    txt2img_negative_prompt,
                     dummy_component
                 ],
             )
