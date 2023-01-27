@@ -223,7 +223,7 @@ def interrogate_craitvt(craitvt_gallery, index):
     print('img2prmpt: ', prompt)
     print(':-E interrogator finished')
 
-    return gr_show(True) if prompt is None else prompt
+    return prompt, index # gr_show(True) if prompt is None else prompt, index
 
 
 def interrogate_deepbooru(image):
