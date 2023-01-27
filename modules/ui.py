@@ -419,7 +419,7 @@ def create_toprow_craitvt(is_img2img):
             with gr.Row():
                 with gr.Column(scale=80):
                     with gr.Row():
-                        prompt = gr.Textbox(label="Word salad", elem_id=f"{id_part}_explore_prompt", show_label=True, lines=2,
+                        explore_prompt = gr.Textbox(label="Word salad", elem_id=f"{id_part}_explore_prompt", show_label=True, lines=2,
                             placeholder="Word salad"
                         )
             with gr.Row():
