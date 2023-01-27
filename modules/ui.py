@@ -841,14 +841,13 @@ def create_ui():
 
             img2img_interrogate.click(
                 fn=interrogate_craitvt,
-                _js="(x, y, z) => [x, y, selected_gallery_index()]",
+                _js="(x, y) => [x, selected_gallery_index()]",
                 inputs=[
                     craitvt_gallery,
                     dummy_component
                 ],
                 outputs=[
-                    txt2img_negative_prompt,
-                    dummy_component
+                    txt2img_negative_prompt
                 ],
             )
 
