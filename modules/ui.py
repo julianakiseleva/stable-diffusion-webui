@@ -847,7 +847,8 @@ def create_ui():
                     dummy_component
                 ],
                 outputs=[
-                    txt2img_negative_prompt
+                    txt2img_negative_prompt,
+                    dummy_component
                 ],
             )
 
