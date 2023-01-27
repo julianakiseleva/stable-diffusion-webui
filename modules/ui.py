@@ -405,6 +405,87 @@ def create_toprow(is_img2img):
 
     return prompt, prompt_style, negative_prompt, prompt_style2, submit, button_interrogate, button_deepbooru, prompt_style_apply, save_style, paste, token_counter, token_button
 
+def create_toprow_craitvt(is_img2img):
+    id_part = "img2img" if is_img2img else "txt2img"
+
+    with gr.Row(elem_id="toprow"):
+        with gr.Column(scale=6):
+            with gr.Row():
+                with gr.Column(scale=80):
+                    with gr.Row():
+                        prompt = gr.Textbox(label="Prompt", elem_id=f"{id_part}_prompt", show_label=True, lines=2,
+                            placeholder="Prompt (press Ctrl+Enter or Alt+Enter to generate)"
+                        )
+            with gr.Row():
+                with gr.Column(scale=80):
+                    with gr.Row():
+                        prompt = gr.Textbox(label="Word salad", elem_id=f"{id_part}_explore_prompt", show_label=True, lines=2,
+                            placeholder="Word salad"
+                        )
+            with gr.Row():
+                with gr.Column(scale=80):
+                    with gr.Row():
+                        negative_prompt = gr.Textbox(label="Negative prompt", elem_id=f"{id_part}_neg_prompt", show_label=True, lines=2,
+                            placeholder="Negative prompt (press Ctrl+Enter or Alt+Enter to generate)"
+                        )
+
+        with gr.Column(scale=1, elem_id="roll_col"):
+            paste = gr.Button(value=paste_symbol, elem_id="paste")
+            save_style = gr.Button(value=save_style_symbol, elem_id="style_create")
+            prompt_style_apply = gr.Button(value=apply_style_symbol, elem_id="style_apply")
+            clear_prompt_button = gr.Button(value=clear_prompt_symbol, elem_id=f"{id_part}_clear_prompt")
+            token_counter = gr.HTML(value="<span></span>", elem_id=f"{id_part}_token_counter")
+            token_button = gr.Button(visible=False, elem_id=f"{id_part}_token_button")
+
+            clear_prompt_button.click(
+                fn=lambda *x: x,
+                _js="confirm_clear_prompt",
+                inputs=[prompt, negative_prompt],
+                outputs=[prompt, negative_prompt],
+            )
+
+        # with gr.Column(scale=1, elem_id="interrogate_col"):
+        #     button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+        #     button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+
+        button_interrogate = None
+        button_deepbooru = None
+        if is_img2img:
+            with gr.Column(scale=1, elem_id="interrogate_col"):
+                button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
+                button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
+        else:
+            with gr.Column(scale=1, elem_id="interrogate_col"):
+                button_interrogate = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="interrogate")
+                button_interrogate = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate_neg")
+
+        with gr.Column(scale=1):
+            with gr.Row(elem_id=f"{id_part}_generate_box"):
+                skip = gr.Button('Skip', elem_id=f"{id_part}_skip")
+                interrupt = gr.Button('Interrupt', elem_id=f"{id_part}_interrupt")
+                submit = gr.Button('Generate', elem_id=f"{id_part}_generate", variant='primary')
+
+                skip.click(
+                    fn=lambda: shared.state.skip(),
+                    inputs=[],
+                    outputs=[],
+                )
+
+                interrupt.click(
+                    fn=lambda: shared.state.interrupt(),
+                    inputs=[],
+                    outputs=[],
+                )
+
+            with gr.Row():
+                with gr.Column(scale=1, elem_id="style_pos_col"):
+                    prompt_style = gr.Dropdown(label="Style 1", elem_id=f"{id_part}_style_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+
+                with gr.Column(scale=1, elem_id="style_neg_col"):
+                    prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+
+    return prompt, prompt_style, negative_prompt, prompt_style2, submit, button_interrogate, button_deepbooru, prompt_style_apply, save_style, paste, token_counter, token_button
+
 
 def setup_progressbar(*args, **kwargs):
     pass
@@ -716,7 +797,7 @@ def create_ui():
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_deepbooru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
@@ -847,7 +928,20 @@ def create_ui():
                     dummy_component
                 ],
                 outputs=[
-                    txt2img_negative_prompt,
+                    txt2img_explore_prompt,
+                    dummy_component
+                ],
+            )
+
+            img2img_interrogate_neg.click(
+                fn=interrogate_craitvt,
+                _js="(x, y) => [x, selected_gallery_index()]",
+                inputs=[
+                    craitvt_gallery,
+                    dummy_component
+                ],
+                outputs=[
+                    txt2img_neg_prompt,
                     dummy_component
                 ],
             )
