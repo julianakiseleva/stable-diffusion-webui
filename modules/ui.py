@@ -477,12 +477,12 @@ def create_toprow_craitvt(is_img2img):
                     outputs=[],
                 )
 
-            # with gr.Row():
-            #     with gr.Column(scale=1, elem_id="style_pos_col"):
-            #         prompt_style = gr.Dropdown(label="Style 1", elem_id=f"{id_part}_style_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+            with gr.Row():
+                with gr.Column(scale=1, elem_id="style_pos_col"):
+                    prompt_style = gr.Dropdown(label="Style 1", elem_id=f"{id_part}_style_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
-            #     with gr.Column(scale=1, elem_id="style_neg_col"):
-            #         prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+                with gr.Column(scale=1, elem_id="style_neg_col"):
+                    prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
     return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
     # return prompt, explore_prompt, negative_prompt, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
