@@ -477,14 +477,15 @@ def create_toprow_craitvt(is_img2img):
                     outputs=[],
                 )
 
-            with gr.Row():
-                with gr.Column(scale=1, elem_id="style_pos_col"):
-                    prompt_style = gr.Dropdown(label="Style 1", elem_id=f"{id_part}_style_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+            # with gr.Row():
+            #     with gr.Column(scale=1, elem_id="style_pos_col"):
+            #         prompt_style = gr.Dropdown(label="Style 1", elem_id=f"{id_part}_style_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
-                with gr.Column(scale=1, elem_id="style_neg_col"):
-                    prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
+            #     with gr.Column(scale=1, elem_id="style_neg_col"):
+            #         prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
-    return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
+    # return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
+    return prompt, explore_prompt, negative_prompt, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
 
 
 def setup_progressbar(*args, **kwargs):
@@ -797,7 +798,18 @@ def create_ui():
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
+        #txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
+        txt2img_prompt, 
+        txt2img_explore_prompt, 
+        txt2img_negative_prompt,
+        submit, 
+        img2img_interrogate, 
+        img2img_interrogate_neg, 
+        txt2img_prompt_style_apply, 
+        txt2img_save_style, 
+        txt2img_paste, 
+        token_counter, 
+        token_button = create_toprow_craitvt(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
         txt_prompt_img = gr.File(label="", elem_id="txt2img_prompt_image", file_count="single", type="bytes", visible=False)
@@ -886,8 +898,8 @@ def create_ui():
                     dummy_component,
                     txt2img_prompt,
                     txt2img_negative_prompt,
-                    txt2img_prompt_style,
-                    txt2img_prompt_style2,
+                    _,
+                    _,
                     steps,
                     sampler_index,
                     restore_faces,
