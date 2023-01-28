@@ -207,29 +207,41 @@ def apply_styles(prompt, prompt_neg, style1_name, style2_name):
 
 
 def interrogate(image):
-    print(craitvt_gallery)
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
 
     return gr_show(True) if prompt is None else prompt
 
-def interrogate_craitvt(craitvt_gallery, index):
-    print(':-E interrogator started')
+def img2txt_craitvt(craitvt_gallery, index):
+    print(':-E CLIP started')
     print('Selected image: ', index)
     print('Selected image info: ', craitvt_gallery[index])
     print('Selected image name: ', craitvt_gallery[index]['name'])
     # img from file
     image = Image.open(craitvt_gallery[index]['name'])
     prompt = shared.interrogator.interrogate(image.convert("RGB"))
-    print('img2prmpt: ', prompt)
-    print(':-E interrogator finished')
+    print('img2txt: ', prompt)
+    print(':-E CLIP finished')
 
     return prompt, index # gr_show(True) if prompt is None else prompt, index
 
 
+def img2txt_booru_craitvt(craitvt_gallery, index):
+    print(':-E DeepBooru started')
+    print('Selected image: ', index)
+    print('Selected image info: ', craitvt_gallery[index])
+    print('Selected image name: ', craitvt_gallery[index]['name'])
+    # img from file
+    image = Image.open(craitvt_gallery[index]['name'])
+    prompt = deepbooru.model.tag(image)
+    print('img2txt: ', prompt)
+    print(':-E DeepBooru finished')
+
+    return prompt, index # gr_show(True) if prompt is None else prompt, index
+
 def interrogate_deepbooru(image):
     prompt = deepbooru.model.tag(image)
-    return gr_show(True) if prompt is None else prompt
 
+    return gr_show(True) if prompt is None else prompt
 
 def create_seed_inputs(target_interface):
     with FormRow(elem_id=target_interface + '_seed_row'):
@@ -444,10 +456,6 @@ def create_toprow_craitvt(is_img2img):
                 outputs=[prompt, negative_prompt],
             )
 
-        # with gr.Column(scale=1, elem_id="interrogate_col"):
-        #     button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
-        #     button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
-
         button_interrogate = None
         button_deepbooru = None
         if is_img2img:
@@ -455,9 +463,11 @@ def create_toprow_craitvt(is_img2img):
                 button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
                 button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
         else:
-            with gr.Column(scale=1, elem_id="interrogate_col"):
-                button_interrogate = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="interrogate")
-                button_interrogate_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate_neg")
+            with gr.Column(scale=1, elem_id="img2txt_col"):
+                img2txt = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="img2txt")
+                bttn_img2txt_booru = gr.Button(thumbs_up_symbol+'(Booru)', elem_id="img2txt_booru")
+                bttn_img2txt_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="img2txt_neg")
+                bttn_img2txt_neg_booru = gr.Button(thumbs_down_symbol+'(Booru)', elem_id="img2txt_neg_booru")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
@@ -484,8 +494,8 @@ def create_toprow_craitvt(is_img2img):
                 with gr.Column(scale=1, elem_id="style_neg_col"):
                     prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
-    return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
-    # return prompt, explore_prompt, negative_prompt, submit, button_interrogate, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
+    return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, prompt_style_apply, save_style, paste, token_counter, token_button
+    # return prompt, explore_prompt, negative_prompt, submit, button_interrogate, button_interrogate_booru, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
 
 
 def setup_progressbar(*args, **kwargs):
@@ -798,7 +808,7 @@ def create_ui():
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
         # txt2img_prompt, txt2img_explore_prompt, txt2img_negative_prompt, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
@@ -825,7 +835,7 @@ def create_ui():
                             if opts.dimensions_and_batch_together:
                                 with gr.Column(elem_id="txt2img_column_batch"):
                                     batch_count = gr.Slider(minimum=1, step=1, label='Batch count', value=1, elem_id="txt2img_batch_count")
-                                    batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id="txt2img_batch_size")
+                                    batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=6, elem_id="txt2img_batch_size")
 
                     elif category == "cfg":
                         cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0, elem_id="txt2img_cfg_scale")
@@ -922,8 +932,8 @@ def create_ui():
             txt2img_prompt.submit(**txt2img_args)
             submit.click(**txt2img_args)
 
-            img2img_interrogate.click(
-                fn=interrogate_craitvt,
+            img2txt.click(
+                fn=img2txt_craitvt,
                 _js="(x, y) => [x, selected_gallery_index()]",
                 inputs=[
                     craitvt_gallery,
@@ -935,8 +945,34 @@ def create_ui():
                 ],
             )
 
-            img2img_interrogate_neg.click(
-                fn=interrogate_craitvt,
+            img2txt_neg.click(
+                fn=img2txt_craitvt,
+                _js="(x, y) => [x, selected_gallery_index()]",
+                inputs=[
+                    craitvt_gallery,
+                    dummy_component
+                ],
+                outputs=[
+                    txt2img_negative_prompt,
+                    dummy_component
+                ],
+            )
+
+            img2txt_booru.click(
+                fn=img2txt_booru_craitvt,
+                _js="(x, y) => [x, selected_gallery_index()]",
+                inputs=[
+                    craitvt_gallery,
+                    dummy_component
+                ],
+                outputs=[
+                    txt2img_explore_prompt,
+                    dummy_component
+                ],
+            )
+
+            img2txt_neg_booru.click(
+                fn=img2txt_booru_craitvt,
                 _js="(x, y) => [x, selected_gallery_index()]",
                 inputs=[
                     craitvt_gallery,
@@ -2053,7 +2089,7 @@ def create_ui():
         )
 
     interfaces = [
-        (craitvt_interface, "craitvt", "craitvt"),
+        (craitvt_interface, "CRAITVT", "craitvt"),
         (txt2img_interface, "txt2img", "txt2img"),
         (img2img_interface, "img2img", "img2img"),
         (extras_interface, "Extras", "extras"),
