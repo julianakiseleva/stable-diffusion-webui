@@ -465,9 +465,9 @@ def create_toprow_craitvt(is_img2img):
         else:
             with gr.Column(scale=1, elem_id="img2txt_col"):
                 img2txt = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="img2txt")
-                bttn_img2txt_booru = gr.Button(thumbs_up_symbol+'(Booru)', elem_id="img2txt_booru")
-                bttn_img2txt_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="img2txt_neg")
-                bttn_img2txt_neg_booru = gr.Button(thumbs_down_symbol+'(Booru)', elem_id="img2txt_neg_booru")
+                img2txt_booru = gr.Button(thumbs_up_symbol+'(Booru)', elem_id="img2txt_booru")
+                img2txt_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="img2txt_neg")
+                img2txt_neg_booru = gr.Button(thumbs_down_symbol+'(Booru)', elem_id="img2txt_neg_booru")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
