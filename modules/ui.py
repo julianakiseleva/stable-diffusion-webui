@@ -386,9 +386,9 @@ def create_toprow(is_img2img):
             with gr.Column(scale=1, elem_id="interrogate_col"):
                 button_interrogate = gr.Button('Interrogate\nCLIP', elem_id="interrogate")
                 button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
-        else:
-            with gr.Column(scale=1, elem_id="interrogate_col"):
-                button_interrogate = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate")
+        # else:
+        #     with gr.Column(scale=1, elem_id="interrogate_col"):
+        #         button_interrogate = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="interrogate")
 
         with gr.Column(scale=1):
             with gr.Row(elem_id=f"{id_part}_generate_box"):
@@ -418,7 +418,7 @@ def create_toprow(is_img2img):
     return prompt, prompt_style, negative_prompt, prompt_style2, submit, button_interrogate, button_deepbooru, prompt_style_apply, save_style, paste, token_counter, token_button
 
 def create_toprow_craitvt(is_img2img):
-    id_part = "img2img" if is_img2img else "txt2img"
+    id_part = "img2img" if is_img2img else "craitvt"
 
     with gr.Row(elem_id="toprow"):
         with gr.Column(scale=6):
