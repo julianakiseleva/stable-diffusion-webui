@@ -418,7 +418,7 @@ def create_toprow(is_img2img):
     return prompt, prompt_style, negative_prompt, prompt_style2, submit, button_interrogate, button_deepbooru, prompt_style_apply, save_style, paste, token_counter, token_button
 
 def create_toprow_craitvt(is_img2img):
-    id_part = "img2img" if is_img2img else "craitvt"
+    id_part = "img2img" if is_img2img else "txt2img"
 
     with gr.Row(elem_id="toprow"):
         with gr.Column(scale=6):
