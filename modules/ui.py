@@ -212,6 +212,7 @@ def interrogate(image):
     return gr_show(True) if prompt is None else prompt
 
 def generate_wordsalad(prompt):
+    import modules.wordcloud
     print(':-E WordSalad started')
     salad = modules.wordcloud.wordcloud(prompt)
     print('Salad: ', salad)
