@@ -19,5 +19,6 @@ def wordcloud(sentence,k=10):
 
     top_k_indices = cosine_similarities.topk(k).indices.tolist()
     top_k_content_words = [content_words[i] for i in top_k_indices]
+    print("Word soup: ",top_k_content_words)
     
     return top_k_content_words
