@@ -211,6 +211,14 @@ def interrogate(image):
 
     return gr_show(True) if prompt is None else prompt
 
+def generate_wordsalad(prompt):
+    print(':-E WordSalad started')
+    salad = modules.wordcloud.wordcloud(prompt)
+    print('Salad: ', salad)
+    print(':-E WordSalad finished')
+
+    return salad
+
 def img2txt_craitvt(craitvt_gallery, index):
     print(':-E CLIP started')
     print('Selected image: ', index)
@@ -464,6 +472,7 @@ def create_toprow_craitvt(is_img2img):
                 button_deepbooru = gr.Button('Interrogate\nDeepBooru', elem_id="deepbooru")
         else:
             with gr.Column(scale=1, elem_id="img2txt_col"):
+                wordsalad = gr.Button('word salad', elem_id="wordsalad")
                 img2txt = gr.Button(thumbs_up_symbol+'(CLIP)', elem_id="img2txt")
                 img2txt_booru = gr.Button(thumbs_up_symbol+'(Booru)', elem_id="img2txt_booru")
                 img2txt_neg = gr.Button(thumbs_down_symbol+'(CLIP)', elem_id="img2txt_neg")
@@ -494,7 +503,7 @@ def create_toprow_craitvt(is_img2img):
                 with gr.Column(scale=1, elem_id="style_neg_col"):
                     prompt_style2 = gr.Dropdown(label="Style 2", elem_id=f"{id_part}_style2_index", choices=[k for k, v in shared.prompt_styles.styles.items()], value=next(iter(shared.prompt_styles.styles.keys())))
 
-    return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, prompt_style_apply, save_style, paste, token_counter, token_button
+    return prompt, prompt_style, explore_prompt, negative_prompt, prompt_style2, submit, wordsalad, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, prompt_style_apply, save_style, paste, token_counter, token_button
     # return prompt, explore_prompt, negative_prompt, submit, button_interrogate, button_interrogate_booru, button_interrogate_neg, prompt_style_apply, save_style, paste, token_counter, token_button
 
 
@@ -808,7 +817,7 @@ def create_ui():
 
 # craitvt: duplicate of txt2img
     with gr.Blocks(analytics_enabled=False) as craitvt_interface:
-        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
+        txt2img_prompt, txt2img_prompt_style, txt2img_explore_prompt, txt2img_negative_prompt, txt2img_prompt_style2, submit, wordsalad, img2txt, img2txt_booru, img2txt_neg, img2txt_neg_booru, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
         # txt2img_prompt, txt2img_explore_prompt, txt2img_negative_prompt, submit, img2img_interrogate, img2img_interrogate_neg, txt2img_prompt_style_apply, txt2img_save_style, txt2img_paste, token_counter, token_button = create_toprow_craitvt(is_img2img=False)
 
         dummy_component = gr.Label(visible=False)
@@ -934,6 +943,16 @@ def create_ui():
             txt2img_prompt.submit(**txt2img_args)
             submit.click(**txt2img_args)
 
+            wordsalad.click(
+                fn=generate_wordsalad,
+                inputs=[
+                    txt2img_prompt
+                ],
+                outputs=[
+                    txt2img_explore_prompt
+                ],
+            )
+            
             img2txt.click(
                 fn=img2txt_craitvt,
                 _js="(x, y) => [x, selected_gallery_index()]",
