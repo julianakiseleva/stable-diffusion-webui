@@ -2,7 +2,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 import torch
 
-def wordcloud(sentence,k=10):
+def wordcloud(sentence,k=40):
     print("+++++ WordCloud started")
 
     nlp = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
