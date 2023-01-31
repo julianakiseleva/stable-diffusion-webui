@@ -903,12 +903,14 @@ def create_ui():
             connect_reuse_seed(seed, reuse_seed, generation_info, dummy_component, is_subseed=False)
             connect_reuse_seed(subseed, reuse_subseed, generation_info, dummy_component, is_subseed=True)
 
+            txt_augmentation = "hi-res, professional, ultra-fine details"
+
             txt2img_args = dict(
                 fn=wrap_gradio_gpu_call(modules.craitvt.craitvt, extra_outputs=[None, '', '']),
                 _js="submit",
                 inputs=[
                     dummy_component,
-                    txt2img_prompt,
+                    (txt2img_prompt + txt_augmentation),
                     txt2img_negative_prompt,
                     txt2img_prompt_style,
                     txt2img_prompt_style2,
