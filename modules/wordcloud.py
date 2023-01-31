@@ -13,7 +13,7 @@ def wordcloud(sentence, k = 60):
         content_words = stored_data['words']
         word_embeddings = stored_data['embeddings']
 
-    sentence = "Description of creative art design for '" + sentence + "In relation to emotions and feelings, actions and intentions, objects and places."
+    sentence = "Description of creative art design for '" + sentence + "' in relation to emotions and feelings, actions and intentions, objects and places."
     sentence_embedding = torch.tensor(nlp.encode(sentence), dtype=torch.float32)
     word_embeddings = torch.tensor(word_embeddings, dtype=torch.float32)
     cosine_similarities = torch.nn.functional.cosine_similarity(sentence_embedding, word_embeddings, dim=1)
