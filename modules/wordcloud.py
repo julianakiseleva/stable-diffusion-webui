@@ -2,7 +2,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 import torch
 
-def wordcloud(sentence,k=40):
+def wordcloud(sentence, k = 60):
     print("+++++ WordCloud started")
 
     nlp = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
@@ -13,13 +13,26 @@ def wordcloud(sentence,k=40):
         content_words = stored_data['words']
         word_embeddings = stored_data['embeddings']
 
-    sentence = sentence + "In relation to emotions and feelings, actions and intentions, objects and places."
+    sentence = "Description of creative art design for '" + sentence + "In relation to emotions and feelings, actions and intentions, objects and places."
     sentence_embedding = torch.tensor(nlp.encode(sentence), dtype=torch.float32)
     word_embeddings = torch.tensor(word_embeddings, dtype=torch.float32)
     cosine_similarities = torch.nn.functional.cosine_similarity(sentence_embedding, word_embeddings, dim=1)
 
     top_k_indices = cosine_similarities.topk(k).indices.tolist()
     top_k_content_words = [content_words[i] for i in top_k_indices]
-    print("Word soup: ",top_k_content_words)
+
+    new_content_words = []
+    for word in top_k_content_words:
+        split_word = word.split("_")
+        i = len(split_word)
+        while i > 0:
+          i -= 1
+          new_content_words.append(split_word[i])     
+
+    new_content_words = list(set(new_content_words))
+
+    new_content_words = [word for word in new_content_words if not any(token in word for token in set(sentence.split()))]
+
+    print("Word soup: ", new_content_words)
     
-    return top_k_content_words
+    return new_content_words
