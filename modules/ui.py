@@ -903,16 +903,13 @@ def create_ui():
             connect_reuse_seed(seed, reuse_seed, generation_info, dummy_component, is_subseed=False)
             connect_reuse_seed(subseed, reuse_subseed, generation_info, dummy_component, is_subseed=True)
 
-            prmpt_augmentation = " Professional creative art design, hi-res, professional, ultra-fine details, fascinating."
-            neg_prmpt_augmentation = " Ugly, non-sense, deformed, disfigured, bad-looking, unsightly, hideous, clumsy, incompetent."
-
             txt2img_args = dict(
                 fn=wrap_gradio_gpu_call(modules.craitvt.craitvt, extra_outputs=[None, '', '']),
                 _js="submit",
                 inputs=[
                     dummy_component,
-                    (txt2img_prompt + prmpt_augmentation),
-                    (txt2img_negative_prompt + neg_prmpt_augmentation),
+                    txt2img_prompt,
+                    txt2img_negative_prompt,
                     txt2img_prompt_style,
                     txt2img_prompt_style2,
                     steps,
