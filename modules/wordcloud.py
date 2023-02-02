@@ -2,6 +2,8 @@ import pickle
 from sentence_transformers import SentenceTransformer
 import torch
 
+# TODO: add support for prompt modifiers - generate embeddings 
+
 def wordcloud(sentence, k = 60):
     print("+++++ WordCloud started")
 
@@ -13,7 +15,7 @@ def wordcloud(sentence, k = 60):
         content_words = stored_data['words']
         word_embeddings = stored_data['embeddings']
 
-    sentence = "Description of creative art design for '" + sentence + "' in relation to emotions and feelings, actions and intentions, objects and places."
+    sentence = "Creative art design for '" + sentence + "' in relation to emotions and feelings, actions and intentions, objects and places."
     sentence_embedding = torch.tensor(nlp.encode(sentence), dtype=torch.float32)
     word_embeddings = torch.tensor(word_embeddings, dtype=torch.float32)
     cosine_similarities = torch.nn.functional.cosine_similarity(sentence_embedding, word_embeddings, dim=1)
@@ -31,6 +33,7 @@ def wordcloud(sentence, k = 60):
 
     new_content_words = list(set(new_content_words))
 
+    # remove prompt words from word cloud
     new_content_words = [word for word in new_content_words if not any(token in word for token in set(sentence.split()))]
 
     print("Word soup: ", new_content_words)
