@@ -16,7 +16,7 @@ def craitvt(id_task: str, prompt: str, negative_prompt: str, prompt_style: str, 
     
     print("+++++ craitvt started")
 
-    prmpt_augmentation = " Professional creative art design, hi-res, ultra-fine details, fascinating."
+    prmpt_augmentation = " Professional creative art design, hi-res, ultra-fine details."
     neg_prmpt_augmentation = " Ugly, non-sense, deformed, disfigured, bad-looking, unsightly, hideous, clumsy, incompetent."
 
     prompt = prompt + prmpt_augmentation
