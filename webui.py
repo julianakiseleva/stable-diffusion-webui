@@ -182,7 +182,7 @@ def webui():
 
         setup_cors(app)
 
-        app.add_middleware(GZipMiddleware, minimum_size=1000)
+        # app.add_middleware(GZipMiddleware, minimum_size=1000)
 
         modules.progress.setup_progress_api(app)
 
